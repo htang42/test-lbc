@@ -132,6 +132,8 @@ func (t *AVLTree) Insert(nd AVLNodeData) {
 }
 
 func (t *AVLTree) Find(key string) *AVLNode {
+	t.lock.Lock()
+	defer t.lock.Unlock()
 	return t.root.find(key)
 }
 
