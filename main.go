@@ -1,14 +1,7 @@
 package main
 
-import (
-	"github.com/gin-gonic/gin"
-	"github.com/htang42/test-lbc/handler/fizzbuzz"
-)
+import "github.com/htang42/test-lbc/cmd"
 
 func main() {
-	r := gin.Default()
-
-	fizzbuzz.RegisterRoutes(r)
-
-	r.Run()
+	cmd.Execute()
 }
