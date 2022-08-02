@@ -17,5 +17,6 @@ func RegisterRoutes(r *gin.Engine) {
 	fizzbuzzRouter := r.Group("/fizzbuzz")
 	{
 		fizzbuzzRouter.GET("", counter.Counter(h.rc, h.ConvertFizzbuzzRequestAsInterface), h.Fizzbuzz)
+		fizzbuzzRouter.GET("/stats", h.Stats)
 	}
 }
