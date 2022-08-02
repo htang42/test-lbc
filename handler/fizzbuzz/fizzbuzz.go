@@ -45,7 +45,7 @@ func (h *FizzbuzzHandler) Fizzbuzz(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"result": result})
+	c.JSON(http.StatusOK, result)
 }
 
 func fizzbuzz(int1, int2, limit int, str1, str2 string) ([]string, error) {
