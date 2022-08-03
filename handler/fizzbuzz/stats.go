@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/htang42/test-lbc/handler/middleware/counter"
+	"github.com/htang42/test-lbc/middleware/counter"
 )
 
 type FizzbuzzStatsResponse struct {

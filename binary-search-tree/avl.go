@@ -7,6 +7,7 @@ import (
 )
 
 type AVLNodeData interface {
+	// need to return an unique string to be able to identify the data
 	GetKey() string
 }
 

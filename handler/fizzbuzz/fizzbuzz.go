@@ -17,6 +17,7 @@ type FizzbuzzRequest struct {
 }
 
 // needed to be able to use the AVL request counter middleware
+// it returns a unique string by concatenating the fields with _
 func (fbr FizzbuzzRequest) GetKey() string {
 	return fmt.Sprintf("%d_%d_%d_%s_%s", fbr.Int1, fbr.Int2, fbr.Limit, fbr.Str1, fbr.Str2)
 }
