@@ -15,7 +15,7 @@ func Counter(rc RequestCounter, getRequest func(c *gin.Context) (interface{}, er
 	return func(c *gin.Context) {
 		req, err := getRequest(c)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		if err := rc.IncrementCounter(req); err != nil {
