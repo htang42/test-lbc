@@ -1,12 +1,14 @@
 package fizzbuzz
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	responseSaver "github.com/htang42/test-lbc/middleware/response-saver"
 )
 
 func TestFizzbuzz(t *testing.T) {
@@ -78,8 +80,13 @@ func TestFizzbuzz(t *testing.T) {
 
 func TestHandlerFizzBuzz(t *testing.T) {
 	r := gin.Default()
-	h := &FizzbuzzHandler{}
-	r.GET("/fizzbuzz", h.Fizzbuzz)
+	h := &FizzbuzzHandler{
+		rs: responseSaver.NewAVLResponseSaver(),
+	}
+	r.GET("/fizzbuzz",
+		responseSaver.Retrieve(h.rs, h.ConvertFizzbuzzRequestAsInterface),
+		h.Fizzbuzz,
+	)
 
 	failedTests := []struct {
 		name    string
@@ -99,10 +106,102 @@ func TestHandlerFizzBuzz(t *testing.T) {
 			req, _ := http.NewRequest("GET", "/fizzbuzz?"+test.request, nil)
 			r.ServeHTTP(w, req)
 			if w.Code != http.StatusBadRequest {
-				t.Errorf("should have a code status bad request %+v\n", w.Code)
+				t.Errorf("should have a code status bad request, got: %+v\n", w.Code)
 			}
 
 		})
 	}
 
+	successTests := []struct {
+		name    string
+		request string
+		want    []string
+	}{
+		{
+			name: "first request", request: "int1=3&int2=5&limit=100&str1=fizz&str2=buzz",
+			want: []string{"1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz", "buzz", "11", "fizz", "13", "14", "fizzbuzz", "16", "17", "fizz", "19", "buzz", "fizz", "22", "23", "fizz", "buzz", "26", "fizz", "28", "29", "fizzbuzz", "31", "32", "fizz", "34", "buzz", "fizz", "37", "38", "fizz", "buzz", "41", "fizz", "43", "44", "fizzbuzz", "46", "47", "fizz", "49", "buzz", "fizz", "52", "53", "fizz", "buzz", "56", "fizz", "58", "59", "fizzbuzz", "61", "62", "fizz", "64", "buzz", "fizz", "67", "68", "fizz", "buzz", "71", "fizz", "73", "74", "fizzbuzz", "76", "77", "fizz", "79", "buzz", "fizz", "82", "83", "fizz", "buzz", "86", "fizz", "88", "89", "fizzbuzz", "91", "92", "fizz", "94", "buzz", "fizz", "97", "98", "fizz", "buzz"},
+		},
+		{
+			name: "second request", request: "int1=3&int2=5&limit=20&str1=fizz&str2=buzz",
+			want: []string{"1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz", "buzz", "11", "fizz", "13", "14", "fizzbuzz", "16", "17", "fizz", "19", "buzz"},
+		},
+		{
+			name: "third request", request: "int1=3&int2=5&limit=1&str1=fizz&str2=buzz",
+			want: []string{"1"},
+		},
+		{
+			name: "fourth request", request: "int1=6&int2=7&limit=35&str1=salut&str2=toto",
+			want: []string{"1", "2", "3", "4", "5", "salut", "toto", "8", "9", "10", "11", "salut", "13", "toto", "15", "16", "17", "salut", "19", "20", "toto", "22", "23", "salut", "25", "26", "27", "toto", "29", "salut", "31", "32", "33", "34", "toto"},
+		},
+		{
+			name: "fifth request", request: "int1=1&int2=5&limit=20&str1=fizz&str2=buzz",
+			want: []string{"fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz"},
+		},
+	}
+
+	for _, test := range successTests {
+		t.Run(test.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", "/fizzbuzz?"+test.request, nil)
+			r.ServeHTTP(w, req)
+			if w.Code != http.StatusOK {
+				t.Errorf("should have a code status ok, got: %+v\n", w.Code)
+			}
+
+			var got []string
+			json.Unmarshal(w.Body.Bytes(), &got)
+
+			if !reflect.DeepEqual(test.want, got) {
+				t.Errorf("want: %v\ngot: %v\n", test.want, got)
+			}
+		})
+	}
+
+	successTests = []struct {
+		name    string
+		request string
+		want    []string
+	}{
+		{
+			name: "first request using only responseSaver middleware", request: "int1=3&int2=5&limit=100&str1=fizz&str2=buzz",
+			want: []string{"1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz", "buzz", "11", "fizz", "13", "14", "fizzbuzz", "16", "17", "fizz", "19", "buzz", "fizz", "22", "23", "fizz", "buzz", "26", "fizz", "28", "29", "fizzbuzz", "31", "32", "fizz", "34", "buzz", "fizz", "37", "38", "fizz", "buzz", "41", "fizz", "43", "44", "fizzbuzz", "46", "47", "fizz", "49", "buzz", "fizz", "52", "53", "fizz", "buzz", "56", "fizz", "58", "59", "fizzbuzz", "61", "62", "fizz", "64", "buzz", "fizz", "67", "68", "fizz", "buzz", "71", "fizz", "73", "74", "fizzbuzz", "76", "77", "fizz", "79", "buzz", "fizz", "82", "83", "fizz", "buzz", "86", "fizz", "88", "89", "fizzbuzz", "91", "92", "fizz", "94", "buzz", "fizz", "97", "98", "fizz", "buzz"},
+		},
+		{
+			name: "second request only responseSaver middleware", request: "int1=3&int2=5&limit=20&str1=fizz&str2=buzz",
+			want: []string{"1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz", "buzz", "11", "fizz", "13", "14", "fizzbuzz", "16", "17", "fizz", "19", "buzz"},
+		},
+		{
+			name: "third request only responseSaver middleware", request: "int1=3&int2=5&limit=1&str1=fizz&str2=buzz",
+			want: []string{"1"},
+		},
+		{
+			name: "fourth request only responseSaver middleware", request: "int1=6&int2=7&limit=35&str1=salut&str2=toto",
+			want: []string{"1", "2", "3", "4", "5", "salut", "toto", "8", "9", "10", "11", "salut", "13", "toto", "15", "16", "17", "salut", "19", "20", "toto", "22", "23", "salut", "25", "26", "27", "toto", "29", "salut", "31", "32", "33", "34", "toto"},
+		},
+		{
+			name: "fifth request only responseSaver middleware", request: "int1=1&int2=5&limit=20&str1=fizz&str2=buzz",
+			want: []string{"fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz", "fizz", "fizz", "fizz", "fizz", "fizzbuzz"},
+		},
+	}
+
+	r = gin.Default()
+	r.GET("/fizzbuzz", responseSaver.Retrieve(h.rs, h.ConvertFizzbuzzRequestAsInterface))
+	// we don't need anymore the h.Fizzbuzz, all results should be get by the middleware
+	for _, test := range successTests {
+		t.Run(test.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", "/fizzbuzz?"+test.request, nil)
+			r.ServeHTTP(w, req)
+			if w.Code != http.StatusOK {
+				t.Errorf("should have a code status ok, got: %+v\n", w.Code)
+			}
+
+			var got []string
+			json.Unmarshal(w.Body.Bytes(), &got)
+
+			if !reflect.DeepEqual(test.want, got) {
+				t.Errorf("want: %v\ngot: %v\n", test.want, got)
+			}
+		})
+	}
 }

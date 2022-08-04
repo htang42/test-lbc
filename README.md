@@ -40,4 +40,4 @@ Example response:
 ## Implementation detail
 
 - The first idea that comes in my mind to count the fizzbuzz requests was to use a map. But no knowing the number of different possibles requests, use a map was a bad idea. So I have decided to use a Binary Search Tree, especially an AVL tree but I could have also use a Red Black Tree.
-- For the same fizzbuzz request, I recalculate every time the result because the execution time is not heavy, otherwise I could have also save the result the first time the request is asked.
+- When the same request is called, we don't recompute the response, we retrieve the response saved in the responseSaver middleware.

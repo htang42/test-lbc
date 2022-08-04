@@ -46,6 +46,9 @@ func (h *FizzbuzzHandler) Fizzbuzz(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if h.rs != nil {
+		h.rs.SetResponse(req, result)
+	}
 	c.JSON(http.StatusOK, result)
 }
 
