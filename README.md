@@ -22,7 +22,7 @@ Build and run main.go
 Example requests: 
 
 - ```http://localhost:8080/fizzbuzz?int1=3&int2=5&limit=100&str1=fizz&str2=buzz```
-- ```http://localhost:8080/stats```
+- ```http://localhost:8080/fizzbuzz/stats```
 
 Example response: 
 
