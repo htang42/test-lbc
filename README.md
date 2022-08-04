@@ -17,7 +17,13 @@ Run a server using GIN Framework that computes a fizzbuzz request and retrieve t
 
 ## Using
 
-Build and run main.go
+### Run
+
+```go run main.go```
+
+### Test
+
+```go test ./...```
 
 Example requests: 
 
