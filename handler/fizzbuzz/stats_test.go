@@ -65,7 +65,8 @@ func TestStats(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			r := gin.Default()
-			h := &FizzbuzzHandler{rc: counter.NewAVLRequestCounter()}
+			h := &FizzbuzzHandler{rc: counter.NewAVLRequestCounter(), limit: 100}
+
 			fizzbuzzRouter := r.Group("/fizzbuzz")
 			{
 				fizzbuzzRouter.GET("", counter.Counter(h.rc, h.ConvertFizzbuzzRequestAsInterface), h.Fizzbuzz)
@@ -76,6 +77,7 @@ func TestStats(t *testing.T) {
 				w := httptest.NewRecorder()
 				req, _ := http.NewRequest("GET", fmt.Sprintf("/fizzbuzz?int1=%d&int2=%d&limit=%d&str1=%s&str2=%s", test.requests[x].Int1, test.requests[x].Int2, test.requests[x].Limit, test.requests[x].Str1, test.requests[x].Str2), nil)
 				r.ServeHTTP(w, req)
+
 			}
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", "/fizzbuzz/stats", nil)

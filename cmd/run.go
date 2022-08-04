@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	cfgFile string
-	port    string
+	cfgFile       string
+	port          string
+	fizzbuzzLimit int
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -53,6 +54,7 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	rootCmd.PersistentFlags().StringVarP(&port, "port", "p", ":8080", "set the port")
+	rootCmd.PersistentFlags().IntVar(&fizzbuzzLimit, "fizzbuzz-limit", 100, "set the limit for fizzbuzz, should not be set to high")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -82,7 +84,7 @@ func initConfig() {
 func run(cmd *cobra.Command, args []string) {
 	r := gin.Default()
 
-	fizzbuzz.RegisterRoutes(r)
+	fizzbuzz.RegisterRoutes(r, fizzbuzzLimit)
 
 	r.Run(port)
 }

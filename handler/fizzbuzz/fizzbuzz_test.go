@@ -21,11 +21,8 @@ func TestFizzbuzz(t *testing.T) {
 		str2  string
 	}{
 		{name: "int1 is < 1", int1: -1, int2: 5, limit: 100, str1: "fizz", str2: "buzz"},
-		{name: "int1 is > 100", int1: 101, int2: 5, limit: 100, str1: "fizz", str2: "buzz"},
 		{name: "int2 is < 1", int1: 3, int2: -1, limit: 100, str1: "fizz", str2: "buzz"},
-		{name: "int2 is > 100", int1: 3, int2: 101, limit: 100, str1: "fizz", str2: "buzz"},
 		{name: "limit is < 1", int1: 3, int2: 5, limit: 0, str1: "fizz", str2: "buzz"},
-		{name: "limit is > 100", int1: 3, int2: 5, limit: 1000, str1: "fizz", str2: "buzz"},
 	}
 	for _, test := range failedTests {
 		t.Run(test.name, func(t *testing.T) {
@@ -81,7 +78,8 @@ func TestFizzbuzz(t *testing.T) {
 func TestHandlerFizzBuzz(t *testing.T) {
 	r := gin.Default()
 	h := &FizzbuzzHandler{
-		rs: responseSaver.NewAVLResponseSaver(),
+		rs:    responseSaver.NewAVLResponseSaver(),
+		limit: 100,
 	}
 	r.GET("/fizzbuzz",
 		responseSaver.Retrieve(h.rs, h.ConvertFizzbuzzRequestAsInterface),

@@ -19,7 +19,7 @@ Run a server using GIN Framework that computes a fizzbuzz request and retrieve t
 
 ### Run
 
-```go run main.go```
+```go run main.go --fizzbuzz-limit 1000```
 
 ### Test
 

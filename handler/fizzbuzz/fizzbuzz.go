@@ -9,9 +9,9 @@ import (
 )
 
 type FizzbuzzRequest struct {
-	Int1  int    `form:"int1" binding:"required,gte=1,lte=100"`
-	Int2  int    `form:"int2" binding:"required,gte=1,lte=100"`
-	Limit int    `form:"limit" binding:"required,gte=1,lte=100"`
+	Int1  int    `form:"int1" binding:"required,gte=1"`
+	Int2  int    `form:"int2" binding:"required,gte=1"`
+	Limit int    `form:"limit" binding:"required,gte=1"`
 	Str1  string `form:"str1" binding:"required"`
 	Str2  string `form:"str2" binding:"required"`
 }
@@ -31,6 +31,15 @@ func (h *FizzbuzzHandler) GetFizzbuzzRequest(c *gin.Context) (*FizzbuzzRequest, 
 	var req FizzbuzzRequest
 	if err := c.ShouldBind(&req); err != nil {
 		return nil, err
+	}
+	if req.Int1 > h.limit {
+		return nil, fmt.Errorf("int1 should be less than or equal to %d", h.limit)
+	}
+	if req.Int2 > h.limit {
+		return nil, fmt.Errorf("int2 should be less than or equal to %d", h.limit)
+	}
+	if req.Limit > h.limit {
+		return nil, fmt.Errorf("limit should be less than or equal to %d", h.limit)
 	}
 	return &req, nil
 }
@@ -53,14 +62,14 @@ func (h *FizzbuzzHandler) Fizzbuzz(c *gin.Context) {
 }
 
 func fizzbuzz(int1, int2, limit int, str1, str2 string) ([]string, error) {
-	if int1 < 1 || int1 > 100 {
-		return nil, fmt.Errorf("int1 should be between 1 and 100")
+	if int1 < 1 {
+		return nil, fmt.Errorf("int1 should be greater than 0")
 	}
-	if int2 < 1 || int2 > 100 {
-		return nil, fmt.Errorf("int2 should be between 1 and 100")
+	if int2 < 1 {
+		return nil, fmt.Errorf("int2 should be greater than 0")
 	}
-	if limit < 1 || limit > 100 {
-		return nil, fmt.Errorf("limit should be between 1 and 100")
+	if limit < 1 {
+		return nil, fmt.Errorf("limit should be greater than 0")
 	}
 	result := make([]string, limit)
 	for x := 1; x <= limit; x++ {

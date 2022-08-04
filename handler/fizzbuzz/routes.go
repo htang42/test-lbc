@@ -7,14 +7,16 @@ import (
 )
 
 type FizzbuzzHandler struct {
-	rc counter.RequestCounter
-	rs responseSaver.ResponseSaver
+	rc    counter.RequestCounter
+	rs    responseSaver.ResponseSaver
+	limit int
 }
 
-func RegisterRoutes(r *gin.Engine) {
+func RegisterRoutes(r *gin.Engine, limit int) {
 	h := &FizzbuzzHandler{
-		rc: counter.NewAVLRequestCounter(),
-		rs: responseSaver.NewAVLResponseSaver(),
+		limit: limit,
+		rc:    counter.NewAVLRequestCounter(),
+		rs:    responseSaver.NewAVLResponseSaver(),
 	}
 
 	fizzbuzzRouter := r.Group("/fizzbuzz")
