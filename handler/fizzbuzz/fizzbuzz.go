@@ -9,9 +9,9 @@ import (
 )
 
 type FizzbuzzRequest struct {
-	Int1  int    `form:"int1" binding:"required,gte=1"`
-	Int2  int    `form:"int2" binding:"required,gte=1"`
-	Limit int    `form:"limit" binding:"required,gte=1"`
+	Int1  int    `form:"int1" binding:"required,gte=1,lte=1000000"`
+	Int2  int    `form:"int2" binding:"required,gte=1,lte=1000000"`
+	Limit int    `form:"limit" binding:"required,gte=1,lte=1000000"`
 	Str1  string `form:"str1" binding:"required"`
 	Str2  string `form:"str2" binding:"required"`
 }
